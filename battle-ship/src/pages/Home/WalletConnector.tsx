@@ -1,6 +1,7 @@
 import { Button } from "@mui/material";
 import { setUserAddress } from "../../../app/appSlice";
 import { useSelector, useDispatch } from "react-redux";
+import { connectWallet } from "../../util/contractInit";
 declare let window: any;
 
 export default function WalletConnector() {
@@ -22,9 +23,7 @@ export default function WalletConnector() {
   async function getAddress() {
     try {
       // 請求用戶授權連接到 MetaMask
-      const accounts: string[] = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
+      const accounts = await connectWallet();
       // accounts 是一個包含用戶賬戶地址的陣列
       const account: string = accounts[0];
       dispatch(setUserAddress(account));

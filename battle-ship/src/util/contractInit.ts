@@ -1,12 +1,20 @@
-import {abi} from "./abi"
+import { abi } from "./abi";
 import { ethers } from "ethers";
 // import { ethers } from "https://cdn.ethers.io/lib/ethers-5.2.esm.min.js";
 
-const provider = new ethers.providers.Web3Provider()
+const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+let contract: ethers.Contract;
 
-async function connectWallet() {
-    await provider.send("eth_requestAccounts", []);
-    console.log(1234)
-    console.log(await provider.getBlockNumber())
-    console.log(await provider.getBalance("0xA871AB14f1AAe8DaEEDDD047999Fb9F234BcaAf5")    )
+export async function connectWallet() {
+  await provider.send("eth_requestAccounts", []);
+  return provider.listAccounts();
+}
+
+export async function initContract(address: string) {
+  contract = new ethers.Contract(address, abi, provider);
+  return contract;
+}
+
+export async function getContract() {
+  return contract;
 }
