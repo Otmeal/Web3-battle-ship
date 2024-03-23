@@ -15,11 +15,8 @@ This contract implements a Battleship game for two players. During game, players
     - Supports exactly two players.
     - Verifies player addresses during game interaction.
 - Ship Placement:
-    - Players submit keccak256 hashes representing their ship placements.
+    - Players submit the signitures of their ship placements.
     - Duplicate ship placements on the board are prevented.
-- Shot Validation:
-    - Players use signatures to prove the validity of their shots.
-    - The contract verifies the signatures using the Verify contract (assumed to be imported).
 - Hit Detection:
     - The contract checks if a shot hits a ship based on the submitted hash.
 - Game State Management:
