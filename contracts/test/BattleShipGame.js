@@ -23,8 +23,6 @@ describe("BattleShipGame", function () {
   describe("Deployment", function () {
     it("Should deploy without any error", async function () {
       const { battleShipGame, owner, otherAccount } = await loadFixture(deployBattleShipGame);
-
-      // expect(await lock.unlockTime()).to.equal(unlockTime);
     });
 
 
