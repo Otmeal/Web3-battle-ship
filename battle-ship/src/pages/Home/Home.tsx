@@ -4,8 +4,14 @@ import { useEffect, useState } from "react";
 import generate2Dbools from "../../util/generate2Dbools";
 import muiGlassSX from "../../styles/MuiGlassSX";
 import WalletConnector from "./WalletConnector";
-import { boolMetrix2bin, bin2boolMetrix } from "../../util/boolMetrixTools";
+import {
+  boolMetrix2bin,
+  bin2boolMetrix,
+  boolMetrix2Coordinates,
+} from "../../util/boolMetrixTools";
 import { useNavigate } from "react-router-dom";
+import { generateKey, hashKey } from "../../util/keyTools";
+import { sign } from "../../util/sign";
 
 export default function Home() {
   const [ships, setShips] = useState<boolean[][]>(generate2Dbools(5, 5));
@@ -54,7 +60,17 @@ export default function Home() {
   };
 
   const handleJoin = () => {
-    navigate(`/game`);
+    const key = generateKey();
+    const hashedKey = hashKey(key);
+    const shipCoordinates = boolMetrix2Coordinates(ships);
+    let signedShips: string[] = [];
+    for (let i = 0; i < shipCoordinates.length; i++) {
+      signedShips.push(
+        sign(shipCoordinates[0].toString() + shipCoordinates[1].toString, key)
+      );
+    }
+    localStorage.setItem("key", key);
+    console.log(key, hashedKey);
   };
 
   return (

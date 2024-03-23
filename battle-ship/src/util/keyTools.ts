@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 
-export function generateKey() {
-  return ethers.utils.randomBytes(32);
+export function generateKey(): string {
+  return ethers.utils.randomBytes(32).toString();
 }
 
 export function hashKey(key: string) {
