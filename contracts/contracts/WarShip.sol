@@ -38,7 +38,7 @@ contract BattleShipGame {
     mapping(address => bytes32) public playerSecretKeys;
 
     mapping(uint => Coordinate[]) public roundShotsHistory;
-    mapping(address => mapping(uint => ShipShotProof[])) public playerReportHistory;
+    mapping(address => mapping(uint => mapping(uint => ShipShotProof))) public playerReportHistory;
 
     bool public isGameOver;
     bool public isKeysRevealed;
@@ -142,7 +142,9 @@ contract BattleShipGame {
             });
         }
         playerHasReportedHits[msg.sender] = true;
-        playerReportHistory[msg.sender][round] = _shotSignatures;
+        for (uint i = 0; i < _shotSignatures.length; i++) {
+            playerReportHistory[msg.sender][round][i] = _shotSignatures[i];
+        }
     }
 
     function isHit(
@@ -254,9 +256,6 @@ contract BattleShipGame {
         require(isGameOver, "The game isn't over yet");
         require(isKeysRevealed, "Keys are not yet revealed");
         for (uint i = 0; i < round; i++) {
-            if (roundShotsHistory[i].length != playerReportHistory[_player][i].length) {
-                return true;
-            }
             for (uint j = 0; j < roundShotsHistory[i].length; j++) {
                 if (sign(abi.encodePacked(roundShotsHistory[i][j].x, roundShotsHistory[i][j].y), playerSecretKeys[_player]) != playerReportHistory[_player][i][j].signature) {
                     return true;
