@@ -1,9 +1,9 @@
-import Web3 from "web3";
 import { Box, Card, Grid } from "@mui/material";
 import GameBoard from "../../components/GameBoard/GameBoard";
 import { useState } from "react";
 import generate2Dbools from "../../util/generate2Dbools";
 import muiGlassSX from "../../styles/MuiGlassSX";
+import WalletConnector from "./WalletConnector";
 
 export default function Home() {
   const [ships, setShips] = useState<boolean[][]>(generate2Dbools(5, 5));
@@ -77,53 +77,10 @@ export default function Home() {
               ...muiGlassSX,
             }}
           >
-            <h1 className="text-4xl font-bold mb-4">
-              Send Crypto across the world
-            </h1>
-            <p className="mb-6">
-              Explore the crypto world. Buy and sell cryptocurrencies easily on
-              Krypto.
-            </p>
-            <ConnectToMetaMask />
+            <WalletConnector />
           </Card>
         </Grid>
       </Grid>
     </Box>
   );
 }
-
-const ConnectToMetaMask = () => {
-  const handleClick = async () => {
-    if ((window as any)?.ethereum) {
-      // Check if MetaMask is installed
-      try {
-        const accounts = await (window as any)?.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        const provider = new Web3.providers.HttpProvider(
-          (window as any)?.ethereum
-        );
-        const web3 = new Web3(provider);
-        console.log("web3", web3);
-        console.log("Connected to MetaMask account:", accounts[0]);
-        // Use web3 here to interact with the blockchain
-      } catch (error) {
-        console.error("Error connecting to MetaMask:", error);
-      }
-    } else {
-      console.error("Please install MetaMask to use this application.");
-    }
-  };
-
-  return (
-    <button
-      className="group relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800"
-      onClick={handleClick}
-    >
-      <span className="relative px-5 py-2.5 transition-all ease-in duration-200 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-        Connect Wallet
-      </span>
-      <div className="ease-in duration-300 opacity-0 group-hover:block group-hover:opacity-100 transition-all"></div>
-    </button>
-  );
-};

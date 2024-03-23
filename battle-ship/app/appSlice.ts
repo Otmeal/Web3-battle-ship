@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const appSlice = createSlice({
   name: "app",
   initialState: {
-    account: "",
+    userAddress: "",
     web3: null,
     contract: null,
     networkId: null,
@@ -12,8 +12,8 @@ const appSlice = createSlice({
     errorMessage: "",
   },
   reducers: {
-    setAccount: (state, action) => {
-      state.account = action.payload;
+    setUserAddress: (state, action) => {
+      state.userAddress = action.payload;
     },
     setWeb3: (state, action) => {
       state.web3 = action.payload;
@@ -37,7 +37,7 @@ const appSlice = createSlice({
 });
 
 export const {
-  setAccount,
+  setUserAddress,
   setWeb3,
   setContract,
   setNetworkId,
