@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.10;
 
-import "contracts/Verify.sol";
-
-contract BattleShipGame is SigVerifier {
+contract BattleShipGame {
     // Admin
     address payable public owner;
 
@@ -18,7 +16,7 @@ contract BattleShipGame is SigVerifier {
     address[] public playersAddress; // We use an array because it's easier to iterate than a mapping
 
     // Player ships
-    mapping(address => mapping(bytes => bool)) ships;
+    mapping(address => mapping(bytes32 => bool)) ships;
 
     // Player ships that have been destroyed
     mapping(address => Coordinate[]) destroyedShips;
@@ -31,6 +29,7 @@ contract BattleShipGame is SigVerifier {
     mapping(address => bool) public playerHasPlayed;
     mapping(address => bool) public playerHasPlacedShips;
     mapping(address => bool) public playerHasReportedHits;
+    mapping(address => bytes32) public playerHashedSecretKeys;
 
     bool public isGameOver;
 
@@ -40,7 +39,7 @@ contract BattleShipGame is SigVerifier {
     }
 
     struct ShipShotProof {
-        bytes signature;
+        bytes32 signature;
         // The address of the player that shot
         // at this coordinate
         address shotBy;
@@ -72,7 +71,7 @@ contract BattleShipGame is SigVerifier {
         owner = payable(msg.sender);
     }
 
-    function joinGame(bytes[] memory _playerShips) public {
+    function joinGame(bytes32[] memory _playerShips, bytes32 hashedSecretKey) public {
         require(!isGameOver, "Game is over");
         require(players[msg.sender], "Address is not a part of this game");
         require(
@@ -85,7 +84,7 @@ contract BattleShipGame is SigVerifier {
         );
 
         for (uint i = 0; i < _playerShips.length; i++) {
-            bytes memory shipHash = _playerShips[i];
+            bytes32 shipHash = _playerShips[i];
             require(
                 !ships[msg.sender][shipHash],
                 "User has already placed a ship on this tile."
@@ -93,6 +92,7 @@ contract BattleShipGame is SigVerifier {
             ships[msg.sender][shipHash] = true;
         }
         playerHasPlacedShips[msg.sender] = true;
+        playerHashedSecretKeys[msg.sender] = hashedSecretKey;
     }
 
     function takeAShot(Coordinate memory _coord) public {
@@ -137,17 +137,6 @@ contract BattleShipGame is SigVerifier {
         ShipShotProof memory _hitProof
     ) internal view returns (bool, Coordinate memory) {
         Coordinate memory _playerShot = playerShots[_hitProof.shotBy];
-        bytes32 _calculatedHash = keccak256(
-            abi.encodePacked(_playerShot.x, _playerShot.y)
-        );
-
-        (uint8 v, bytes32 r, bytes32 s) = SplitSignature(_hitProof.signature);
-        address signer = RecoverSigner(_calculatedHash, v, r, s);
-        require(
-            signer == msg.sender,
-            "msg.sender and derived message signer do not match"
-        );
-
         // A ship piece at this coordinate exists
         return (ships[msg.sender][_hitProof.signature] == true, _playerShot);
     }
@@ -232,6 +221,10 @@ contract BattleShipGame is SigVerifier {
         }
         // No winner
         return address(0);
+    }
+
+    function sign(bytes32 data, bytes32 key) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(data, key));
     }
 }
 
