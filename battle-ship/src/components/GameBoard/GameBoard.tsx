@@ -26,7 +26,6 @@ export default function GameBoard({ ships, hits, selection, onClick }: Props) {
             height: "20%",
             display: "flex",
             width: "100%",
-            maxWidth: "600px",
             justifyContent: "center",
 
             alignItems: "center",
@@ -54,6 +53,7 @@ export default function GameBoard({ ships, hits, selection, onClick }: Props) {
         flexDirection: "row",
         width: "100%",
         height: "100%",
+        maxWidth: "600px",
       }}
       spacing={2}
     >
