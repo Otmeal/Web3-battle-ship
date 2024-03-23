@@ -1,4 +1,4 @@
-import { abi } from "./abi";
+import { BattleShipGameFactoryAbi, BattleShipGameAbi } from "./abi";
 import { ethers } from "ethers";
 // import { ethers } from "https://cdn.ethers.io/lib/ethers-5.2.esm.min.js";
 
@@ -10,8 +10,9 @@ export async function connectWallet() {
   return provider.listAccounts();
 }
 
-export async function initContract(address: string) {
-  contract = new ethers.Contract(address, abi, provider);
+export async function initBattleShipGameFactoryContract() {
+  const address = '0x5be371B58Ebf06B7D3c08137fe4A4053EAe96581';
+  contract = new ethers.Contract(address, BattleShipGameFactoryAbi, provider);
   return contract;
 }
 
