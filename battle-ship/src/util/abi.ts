@@ -1,4 +1,4 @@
-export const abi = [
+export const BattleShipGameAbi = [
     {
         "inputs": [
             {
@@ -581,3 +581,56 @@ export const abi = [
     }
 ]
 
+export const BattleShipGameFactoryAbi = [
+    {
+        "inputs": [
+            {
+                "internalType": "address[]",
+                "name": "_playersAddress",
+                "type": "address[]"
+            }
+        ],
+        "name": "createBattleShipGame",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "deployedGames",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getDeployedGames",
+        "outputs": [
+            {
+                "internalType": "address[]",
+                "name": "",
+                "type": "address[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+]
