@@ -33,8 +33,8 @@ export async function initBattleShipGameContract(_playersAddress: string[]) {
   return gameContract;
 }
 
-export function createBattleShipGameContract(address: string) {
-  const gameContract = new ethers.Contract(
+export function setBattleShipGameContract(address: string) {
+  gameContract = new ethers.Contract(
     address,
     BattleShipGameAbi,
     provider.getSigner()

@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { generateKey, hashKey } from "../../util/keyTools";
 import { sign } from "../../util/sign";
 import {
-  createBattleShipGameContract,
+  setBattleShipGameContract,
   initBattleShipGameContract,
   initBattleShipGameFactoryContract,
 } from "../../util/contractInit";
@@ -84,14 +84,23 @@ export default function Home() {
     localStorage.setItem("key", key);
     console.log(key, hashedKey);
 
-    const contract = await createBattleShipGameContract(address);
+    const contract = await setBattleShipGameContract(address);
 
     await contract.joinGame(signedShips, hashedKey);
+    const playerList = await contract.playersAddress();
+    console.log(playerList);
+
+    if (enemyAddress === "") {
+      userAddress === playerList[0]
+        ? localStorage.setItem("enemy", playerList[1])
+        : localStorage.setItem("enemy", playerList[0]);
+    }
 
     navigate(`/game`);
   };
 
   const handleJoin = () => {
+    setEnemyAddress("");
     joinGame(gameAdderss);
   };
 
@@ -101,6 +110,7 @@ export default function Home() {
       userAddress,
       enemyAddress,
     ]);
+    localStorage.setItem("enemy", enemyAddress);
     joinGame(contract.address);
   };
 
