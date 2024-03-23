@@ -1,7 +1,7 @@
 # Web3-battle-ship
 
 
-This contract implements a Battleship game for two players. During game, players place their ships on a virtual board (represented by keccak256 hashes), take turns shooting at each other's ships, and report hits using cryptographic proofs. The game ends when one player destroys all the ships of the other player.
+This contract implements a basic Battleship game for two players. Players can join the game, place their ships on a virtual board (by providing the signature of the coordnate without revealing their actual position), and take turns shooting at each other's ships, ensuring all users can not cheat using cryptographic proofs. The game ends when one player destroys all the other player's ships.
 
 ## Client:
 
@@ -15,7 +15,7 @@ This contract implements a Battleship game for two players. During game, players
     - Supports exactly two players.
     - Verifies player addresses during game interaction.
 - Ship Placement:
-    - Players submit the signitures of their ship placements.
+    - Players submit the signitures of their ship placements without revealing the actual position of their ships.
     - Duplicate ship placements on the board are prevented.
 - Hit Detection:
     - The contract checks if a shot hits a ship based on the submitted hash.
@@ -23,6 +23,8 @@ This contract implements a Battleship game for two players. During game, players
     - Tracks destroyed ships and players.
     - Determines the winner when one player loses all ships.
     - Handles turn management and checks if all players have played/reported hits.
+- Cheat Detection:
+    - 
 
 | State Variables | Description |
 | ----------- | ----------- |
