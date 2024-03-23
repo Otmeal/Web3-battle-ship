@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.10;
 
-import "contracts/Verify.sol";
-
-contract BattleShipGame is SigVerifier {
+contract BattleShipGame {
     // Admin
     address payable public owner;
 
@@ -13,12 +11,15 @@ contract BattleShipGame is SigVerifier {
     // Number of ship pieces a player can have, to build their ships
     uint public constant NO_SHIP_PIECES = 10;
 
+    // The current round of the game
+    uint public round = 0;
+
     // All the players participating in the game
-    mapping(address => bool) public players;
-    address[] public playersAddress; // We use an array because it's easier to iterate than a mapping
+    mapping(address => bool) private players;
+    address[] private playersAddress; // We use an array because it's easier to iterate than a mapping
 
     // Player ships
-    mapping(address => mapping(bytes => bool)) ships;
+    mapping(address => mapping(bytes32 => bool)) ships;
 
     // Player ships that have been destroyed
     mapping(address => Coordinate[]) destroyedShips;
@@ -26,13 +27,21 @@ contract BattleShipGame is SigVerifier {
     // Players who have lost all their ships
     mapping(address => bool) public destroyedPlayers;
     uint public numberOfDestroyedPlayers;
+    uint public numberOfKeysSubmitted;
 
     mapping(address => Coordinate) public playerShots;
     mapping(address => bool) public playerHasPlayed;
     mapping(address => bool) public playerHasPlacedShips;
     mapping(address => bool) public playerHasReportedHits;
+    // keccak256 hash of the player's secret key
+    mapping(address => bytes32) public playerHashedSecretKeys;
+    mapping(address => bytes32) public playerSecretKeys;
+
+    mapping(uint => Coordinate[]) public roundShotsHistory;
+    mapping(address => mapping(uint => mapping(uint => ShipShotProof))) public playerReportHistory;
 
     bool public isGameOver;
+    bool public isKeysRevealed;
 
     struct Coordinate {
         uint8 x;
@@ -40,7 +49,7 @@ contract BattleShipGame is SigVerifier {
     }
 
     struct ShipShotProof {
-        bytes signature;
+        bytes32 signature;
         // The address of the player that shot
         // at this coordinate
         address shotBy;
@@ -72,7 +81,7 @@ contract BattleShipGame is SigVerifier {
         owner = payable(msg.sender);
     }
 
-    function joinGame(bytes[] memory _playerShips) public {
+    function joinGame(bytes32[] memory _playerShips, bytes32 hashedSecretKey) public {
         require(!isGameOver, "Game is over");
         require(players[msg.sender], "Address is not a part of this game");
         require(
@@ -85,7 +94,7 @@ contract BattleShipGame is SigVerifier {
         );
 
         for (uint i = 0; i < _playerShips.length; i++) {
-            bytes memory shipHash = _playerShips[i];
+            bytes32 shipHash = _playerShips[i];
             require(
                 !ships[msg.sender][shipHash],
                 "User has already placed a ship on this tile."
@@ -93,6 +102,7 @@ contract BattleShipGame is SigVerifier {
             ships[msg.sender][shipHash] = true;
         }
         playerHasPlacedShips[msg.sender] = true;
+        playerHashedSecretKeys[msg.sender] = hashedSecretKey;
     }
 
     function takeAShot(Coordinate memory _coord) public {
@@ -106,6 +116,7 @@ contract BattleShipGame is SigVerifier {
 
         playerShots[msg.sender] = _coord;
         playerHasPlayed[msg.sender] = true;
+        roundShotsHistory[round].push(_coord);
     }
 
     function reportHits(ShipShotProof[] memory _shotSignatures) public {
@@ -131,23 +142,15 @@ contract BattleShipGame is SigVerifier {
             });
         }
         playerHasReportedHits[msg.sender] = true;
+        for (uint i = 0; i < _shotSignatures.length; i++) {
+            playerReportHistory[msg.sender][round][i] = _shotSignatures[i];
+        }
     }
 
     function isHit(
         ShipShotProof memory _hitProof
     ) internal view returns (bool, Coordinate memory) {
         Coordinate memory _playerShot = playerShots[_hitProof.shotBy];
-        bytes32 _calculatedHash = keccak256(
-            abi.encodePacked(_playerShot.x, _playerShot.y)
-        );
-
-        (uint8 v, bytes32 r, bytes32 s) = SplitSignature(_hitProof.signature);
-        address signer = RecoverSigner(_calculatedHash, v, r, s);
-        require(
-            signer == msg.sender,
-            "msg.sender and derived message signer do not match"
-        );
-
         // A ship piece at this coordinate exists
         return (ships[msg.sender][_hitProof.signature] == true, _playerShot);
     }
@@ -209,6 +212,7 @@ contract BattleShipGame is SigVerifier {
             playerHasReportedHits[_playerAddress] = false;
             playerShots[_playerAddress] = Coordinate({x: 0, y: 0});
         }
+        round++;
         return true;
     }
 
@@ -224,14 +228,45 @@ contract BattleShipGame is SigVerifier {
 
     function getWinner() public view returns (address winner) {
         require(isGameOver, "The game isn't over yet");
+        require(isKeysRevealed, "Keys are not yet revealed");
         for (uint i = 0; i < playersAddress.length; i++) {
             address _playerAddress = playersAddress[i];
-            if (!destroyedPlayers[_playerAddress]) {
+            if (!destroyedPlayers[_playerAddress] && !isCheater(_playerAddress)) {
                 return _playerAddress;
             }
         }
         // No winner
         return address(0);
+    }
+
+    function submitKey(bytes32 key) public {
+        require(isGameOver, "The game isn't over yet");
+        require(players[msg.sender], "Address is not a part of this game");
+        require(playerHashedSecretKeys[msg.sender] == keccak256(abi.encodePacked(key)), "Invalid key");
+        require(playerSecretKeys[msg.sender] == 0, "Player has already submitted keys");
+        playerSecretKeys[msg.sender] = key;
+        numberOfKeysSubmitted++;
+
+        if (numberOfKeysSubmitted == NO_PLAYERS) {
+            isKeysRevealed = true;
+        }
+    }
+
+    function isCheater(address _player) public view returns (bool) {
+        require(isGameOver, "The game isn't over yet");
+        require(isKeysRevealed, "Keys are not yet revealed");
+        for (uint i = 0; i < round; i++) {
+            for (uint j = 0; j < roundShotsHistory[i].length; j++) {
+                if (sign(abi.encodePacked(roundShotsHistory[i][j].x, roundShotsHistory[i][j].y), playerSecretKeys[_player]) != playerReportHistory[_player][i][j].signature) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function sign(bytes memory data, bytes32 key) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(data, key));
     }
 }
 
