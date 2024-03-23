@@ -229,7 +229,7 @@ contract BattleShipGame {
         require(isKeysRevealed, "Keys are not yet revealed");
         for (uint i = 0; i < playersAddress.length; i++) {
             address _playerAddress = playersAddress[i];
-            if (!destroyedPlayers[_playerAddress]) {
+            if (!destroyedPlayers[_playerAddress] && !isCheater(_playerAddress)) {
                 return _playerAddress;
             }
         }
