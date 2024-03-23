@@ -10,7 +10,8 @@ export async function connectWallet() {
   return provider.listAccounts();
 }
 
-export async function initBattleShipGameFactoryContract(address: string) {
+export async function initBattleShipGameFactoryContract() {
+  const address = '0x5be371B58Ebf06B7D3c08137fe4A4053EAe96581';
   contract = new ethers.Contract(address, BattleShipGameFactoryAbi, provider);
   return contract;
 }
