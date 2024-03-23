@@ -29,7 +29,7 @@ export default function Game() {
     5,
     5
   );
-  gameContract.on("PlayerJoinedGame", (player: string, index: number) => {
+  gameContract.on("PlayerJoinedGame", (_player: string, _index: number) => {
     dispatch(setIsStarted(true));
   });
   useEffect(() => {
@@ -71,6 +71,18 @@ export default function Game() {
   const handleAllReporded = async () => {
     setIsAllReporded(true);
   };
+
+  gameContract.on("PlayerLost", async (player: string) => {
+    const key = localStorage.getItem("key");
+    await gameContract.submitKey(key);
+    const winner = await gameContract.getWinner();
+
+    if (winner === userAddress) {
+      alert("You lose!");
+    } else {
+      alert("You win!");
+    }
+  });
 
   const handleAttackClick = (x: number, y: number) => {
     if (selection.x_coordinate === x && selection.y_coordinate === y) {
