@@ -1,5 +1,4 @@
-import Home from "../pages/Home/Home.tsx";
-
+import Home from "../pages/Home/Home";
 const HomeRoute = {
   path: "/",
   element: <Home />,
