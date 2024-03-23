@@ -1,27 +1,38 @@
 import { ethers } from "ethers";
-// 假設你已經有了一個web3實例，如果沒有，你可以這樣初始化（這裡假設本地節點運行在HTTP://127.0.0.1:8545）
-// const web3 = new Web3('HTTP://127.0.0.1:8545');
 
-// 但在這個範例中，我們不需要與以太坊節點交互，所以可以直接這樣實例化Web3
+function sign(data: string, key: string): string {
+  const dataBytes: Uint8Array = ethers.utils.toUtf8Bytes(data);
+  const keyBytes: Uint8Array = ethers.utils.toUtf8Bytes(key);
 
-export function sign(data: string, key: string) {
-  // 確保輸入是符合要求的bytes32類型
-  if (key.length !== 66) {
-    throw new Error("Key must be a 64bits hex ");
+  const paddedData: Uint8Array = padDataAndKey(dataBytes, keyBytes);
+  const hash: string = ethers.utils.hashMessage(paddedData);
+
+  return hash;
+}
+
+
+// Function to pad (match) the length 
+function padDataAndKey(dataBytes: Uint8Array, keyBytes: Uint8Array): Uint8Array {
+  const paddingLength: number = Math.max(dataBytes.length, keyBytes.length) - Math.min(dataBytes.length, keyBytes.length);
+
+  if (dataBytes.length < keyBytes.length) {
+      dataBytes = ethers.utils.concat([dataBytes, new Uint8Array(paddingLength)]);
+  } 
+  else if (dataBytes.length > keyBytes.length) {
+      keyBytes = ethers.utils.concat([keyBytes, new Uint8Array(paddingLength)]);
   }
 
-  data = stringToHex(data);
-  key = stringToHex(key);
-
-  // 使用web3.utils.soliditySha3來模擬Solidity的abi.encodePacked行為
-  // 直接將data和key作為參數傳入
-  const hashed = ethers.utils.solidityKeccak256(
-    ["bytes32", "bytes32"],
-    [data, key]
-  );
-
-  return hashed;
+  return ethers.utils.concat([dataBytes, keyBytes]);
 }
-function stringToHex(s: string) {
-  return ethers.utils.hexlify(ethers.utils.toUtf8Bytes(s));
-}
+
+// Testing with an example
+/*
+
+const data: string = "[1 , 1]";
+const key: string = "0xF6f69dbC5Ef706d8eF78CfdbBe62AF57B5eeE18b";
+
+const hash: string = sign(data, key);
+console.log(hash);
+*/
+
+
