@@ -1,5 +1,6 @@
 import Box from "@mui/material/Box";
 import Ship from "./Ship";
+import AdjustIcon from "@mui/icons-material/Adjust";
 
 interface Props {
   x: number;
@@ -10,7 +11,34 @@ interface Props {
   isSelected: boolean;
 }
 
-export default function SeaBlock({ x, y, onClick, isHit, isShip }: Props) {
+export default function SeaBlock({
+  x,
+  y,
+  onClick,
+  isHit,
+  isShip,
+  isSelected,
+}: Props) {
+  let content = <></>;
+
+  if (isShip) {
+    content = <Ship isHit={isHit} />;
+  } else if (isHit) {
+    content = (
+      <Box
+        sx={{
+          width: "70%",
+          height: "70%",
+          background: "red",
+          borderRadius: "16px",
+          caretColor: "transparent",
+        }}
+      ></Box>
+    );
+  } else if (isSelected) {
+    content = <AdjustIcon sx={{ color: "red", width: "70%", height: "70%" }} />;
+  }
+
   return (
     <Box
       onClick={() => onClick(x, y)}
@@ -20,7 +48,7 @@ export default function SeaBlock({ x, y, onClick, isHit, isShip }: Props) {
         height: "100%",
         maxWidth: "100px",
         maxHeight: "100px",
-        background: "rgba(60, 103, 255, 0.32)",
+        background: "rgba(18, 42, 255, 0.32)",
         borderRadius: "16px",
         boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
         backdropFilter: "blur(2px)",
@@ -30,7 +58,7 @@ export default function SeaBlock({ x, y, onClick, isHit, isShip }: Props) {
         caretColor: "transparent",
       }}
     >
-      {isShip && <Ship isHit={isHit} />}
+      {content}
     </Box>
   );
 }
