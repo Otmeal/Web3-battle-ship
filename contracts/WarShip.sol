@@ -254,8 +254,6 @@ contract BattleShipGame {
         require(isGameOver, "The game isn't over yet");
         require(isKeysRevealed, "Keys are not yet revealed");
         for (uint i = 0; i < round; i++) {
-            // mapping(uint => Coordinate[]) public roundShotsHistory;
-            // mapping(address => mapping(uint => ShipShotProof[])) public playerReportHistory;
             if (roundShotsHistory[i].length != playerReportHistory[_player][i].length) {
                 return true;
             }
