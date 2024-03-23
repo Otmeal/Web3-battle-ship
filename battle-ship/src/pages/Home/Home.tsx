@@ -5,10 +5,12 @@ import generate2Dbools from "../../util/generate2Dbools";
 import muiGlassSX from "../../styles/MuiGlassSX";
 import WalletConnector from "./WalletConnector";
 import { boolMetrix2bin, bin2boolMetrix } from "../../util/boolMetrixTools";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [ships, setShips] = useState<boolean[][]>(generate2Dbools(5, 5));
   const [gameAdderss, setGameAddress] = useState<string>("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const shipsString = localStorage.getItem("ships");
@@ -51,7 +53,9 @@ export default function Home() {
     }
   };
 
-  const handleJoin = () => {};
+  const handleJoin = () => {
+    navigate(`/game`);
+  };
 
   return (
     <Box
@@ -115,6 +119,7 @@ export default function Home() {
                 marginTop: "10px",
                 marginBottom: "10px",
               }}
+              onClick={handleJoin}
             >
               Join
             </Button>
