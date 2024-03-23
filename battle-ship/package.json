@@ -15,7 +15,10 @@
     "@fontsource/roboto": "^5.0.12",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
+<<<<<<< Updated upstream
     "@reduxjs/toolkit": "^2.2.2",
+=======
+>>>>>>> Stashed changes
     "ethers": "^6.11.1",
     "keccak256": "^1.0.6",
     "localforage": "^1.10.0",
