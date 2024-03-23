@@ -12,13 +12,33 @@ export async function connectWallet() {
 }
 
 export async function initBattleShipGameFactoryContract() {
-  const address = '0x5be371B58Ebf06B7D3c08137fe4A4053EAe96581';
-  factoryContract = new ethers.Contract(address, BattleShipGameFactoryAbi, provider);
+  const address = "0x5be371B58Ebf06B7D3c08137fe4A4053EAe96581";
+  factoryContract = new ethers.Contract(
+    address,
+    BattleShipGameFactoryAbi,
+    provider.getSigner()
+  );
   return factoryContract;
 }
 
 export async function initBattleShipGameContract(_playersAddress: string[]) {
-  gameContract = await factoryContract.createBattleShipGame(_playersAddress);
+  const gameAddress = await factoryContract.createBattleShipGame(
+    _playersAddress
+  );
+  gameContract = new ethers.Contract(
+    gameAddress,
+    BattleShipGameAbi,
+    provider.getSigner()
+  );
+  return gameContract;
+}
+
+export function createBattleShipGameContract(address: string) {
+  const gameContract = new ethers.Contract(
+    address,
+    BattleShipGameAbi,
+    provider.getSigner()
+  );
   return gameContract;
 }
 

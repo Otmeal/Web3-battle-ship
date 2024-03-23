@@ -1,9 +1,11 @@
 import { ethers } from "ethers";
 
 export function generateKey(): string {
-  return ethers.utils.randomBytes(32).toString();
+  const wallet = ethers.Wallet.createRandom();
+  return wallet.privateKey;
 }
 
 export function hashKey(key: string) {
+  console.log(key);
   return ethers.utils.keccak256(key);
 }

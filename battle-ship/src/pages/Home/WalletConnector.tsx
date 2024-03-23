@@ -11,7 +11,6 @@ export default function WalletConnector() {
 
   // 檢查 MetaMask 是否已安裝
   if (typeof window.ethereum !== "undefined") {
-    console.log("MetaMask is installed!");
   } else {
     return (
       <Button variant="contained" color="primary">
@@ -27,14 +26,9 @@ export default function WalletConnector() {
       // accounts 是一個包含用戶賬戶地址的陣列
       const account: string = accounts[0];
       dispatch(setUserAddress(account));
-      console.log(`User's address: ${userAddress}`);
-    } catch (error) {
-      // 處理錯誤，可能是用戶拒絕了連接請求
-      console.error("An error occurred:", error);
-    }
+    } catch (error) {}
   }
 
-  console.log("isConnected", isConnected);
   return (
     <>
       <Button

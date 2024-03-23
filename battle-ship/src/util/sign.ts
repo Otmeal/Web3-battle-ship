@@ -1,4 +1,4 @@
-import ethers from "ethers";
+import { ethers } from "ethers";
 // 假設你已經有了一個web3實例，如果沒有，你可以這樣初始化（這裡假設本地節點運行在HTTP://127.0.0.1:8545）
 // const web3 = new Web3('HTTP://127.0.0.1:8545');
 
@@ -6,12 +6,8 @@ import ethers from "ethers";
 
 export function sign(data: string, key: string) {
   // 確保輸入是符合要求的bytes32類型
-  if (data.length !== 32) {
-    const padding = "0".repeat(32 - data.length);
-    data = data + padding;
-  }
-  if (key.length !== 32) {
-    throw new Error("Key must be 32 bytes long");
+  if (key.length !== 66) {
+    throw new Error("Key must be a 64bits hex ");
   }
 
   data = stringToHex(data);
