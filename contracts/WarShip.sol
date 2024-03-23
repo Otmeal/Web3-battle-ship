@@ -12,8 +12,8 @@ contract BattleShipGame {
     uint public constant NO_SHIP_PIECES = 10;
 
     // All the players participating in the game
-    mapping(address => bool) public players;
-    address[] public playersAddress; // We use an array because it's easier to iterate than a mapping
+    mapping(address => bool) private players;
+    address[] private playersAddress; // We use an array because it's easier to iterate than a mapping
 
     // Player ships
     mapping(address => mapping(bytes32 => bool)) ships;
