@@ -3,6 +3,8 @@ import router from "./routes/Router.ts";
 import { Box } from "@mui/material";
 import "./styles/App.scss";
 import Navbar from "./components/Navbar/Navbar.tsx";
+import { Provider } from "react-redux";
+import { store } from "../app/store.ts";
 
 function App() {
   return (
@@ -15,8 +17,10 @@ function App() {
         height: "100%",
       }}
     >
-      <Navbar />
-      <RouterProvider router={router}></RouterProvider>
+      <Provider store={store}>
+        <Navbar />
+        <RouterProvider router={router}></RouterProvider>
+      </Provider>
     </Box>
   );
 }
