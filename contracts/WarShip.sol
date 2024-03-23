@@ -11,6 +11,9 @@ contract BattleShipGame {
     // Number of ship pieces a player can have, to build their ships
     uint public constant NO_SHIP_PIECES = 10;
 
+    // The current round of the game
+    uint public round = 0;
+
     // All the players participating in the game
     mapping(address => bool) private players;
     address[] private playersAddress; // We use an array because it's easier to iterate than a mapping
@@ -24,14 +27,21 @@ contract BattleShipGame {
     // Players who have lost all their ships
     mapping(address => bool) public destroyedPlayers;
     uint public numberOfDestroyedPlayers;
+    uint public numberOfKeysSubmitted;
 
     mapping(address => Coordinate) public playerShots;
     mapping(address => bool) public playerHasPlayed;
     mapping(address => bool) public playerHasPlacedShips;
     mapping(address => bool) public playerHasReportedHits;
+    // keccak256 hash of the player's secret key
     mapping(address => bytes32) public playerHashedSecretKeys;
+    mapping(address => bytes32) public playerSecretKeys;
+
+    mapping(uint => Coordinate[]) public roundShotsHistory;
+    mapping(address => mapping(uint => ShipShotProof[])) public playerReportHistory;
 
     bool public isGameOver;
+    bool public isKeysRevealed;
 
     struct Coordinate {
         uint8 x;
@@ -106,6 +116,7 @@ contract BattleShipGame {
 
         playerShots[msg.sender] = _coord;
         playerHasPlayed[msg.sender] = true;
+        roundShotsHistory[round].push(_coord);
     }
 
     function reportHits(ShipShotProof[] memory _shotSignatures) public {
@@ -131,6 +142,7 @@ contract BattleShipGame {
             });
         }
         playerHasReportedHits[msg.sender] = true;
+        playerReportHistory[msg.sender][round] = _shotSignatures;
     }
 
     function isHit(
@@ -198,6 +210,7 @@ contract BattleShipGame {
             playerHasReportedHits[_playerAddress] = false;
             playerShots[_playerAddress] = Coordinate({x: 0, y: 0});
         }
+        round++;
         return true;
     }
 
@@ -213,6 +226,7 @@ contract BattleShipGame {
 
     function getWinner() public view returns (address winner) {
         require(isGameOver, "The game isn't over yet");
+        require(isKeysRevealed, "Keys are not yet revealed");
         for (uint i = 0; i < playersAddress.length; i++) {
             address _playerAddress = playersAddress[i];
             if (!destroyedPlayers[_playerAddress]) {
@@ -223,7 +237,38 @@ contract BattleShipGame {
         return address(0);
     }
 
-    function sign(bytes32 data, bytes32 key) public pure returns (bytes32) {
+    function submitKey(bytes32 key) public {
+        require(isGameOver, "The game isn't over yet");
+        require(players[msg.sender], "Address is not a part of this game");
+        require(playerHashedSecretKeys[msg.sender] == keccak256(abi.encodePacked(key)), "Invalid key");
+        require(playerSecretKeys[msg.sender] == 0, "Player has already submitted keys");
+        playerSecretKeys[msg.sender] = key;
+        numberOfKeysSubmitted++;
+
+        if (numberOfKeysSubmitted == NO_PLAYERS) {
+            isKeysRevealed = true;
+        }
+    }
+
+    function isCheater(address _player) public view returns (bool) {
+        require(isGameOver, "The game isn't over yet");
+        require(isKeysRevealed, "Keys are not yet revealed");
+        for (uint i = 0; i < round; i++) {
+            // mapping(uint => Coordinate[]) public roundShotsHistory;
+            // mapping(address => mapping(uint => ShipShotProof[])) public playerReportHistory;
+            if (roundShotsHistory[i].length != playerReportHistory[_player][i].length) {
+                return true;
+            }
+            for (uint j = 0; j < roundShotsHistory[i].length; j++) {
+                if (sign(abi.encodePacked(roundShotsHistory[i][j].x, roundShotsHistory[i][j].y), playerSecretKeys[_player]) != playerReportHistory[_player][i][j].signature) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function sign(bytes memory data, bytes32 key) public pure returns (bytes32) {
         return keccak256(abi.encodePacked(data, key));
     }
 }
