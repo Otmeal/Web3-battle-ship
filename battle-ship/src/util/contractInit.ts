@@ -2,7 +2,10 @@ import { BattleShipGameFactoryAbi, BattleShipGameAbi } from "./abi";
 import { ethers } from "ethers";
 // import { ethers } from "https://cdn.ethers.io/lib/ethers-5.2.esm.min.js";
 
-const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+export const provider = new ethers.providers.Web3Provider(
+  (window as any).ethereum
+);
+
 let factoryContract: ethers.Contract;
 let gameContract: ethers.Contract;
 
@@ -42,10 +45,10 @@ export function setBattleShipGameContract(address: string) {
   return gameContract;
 }
 
-export async function getFactoryContract() {
+export function getFactoryContract() {
   return factoryContract;
 }
 
-export async function getBattleShipGameContract() {
+export function getBattleShipGameContract() {
   return gameContract;
 }

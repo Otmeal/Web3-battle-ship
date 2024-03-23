@@ -17,13 +17,15 @@ import {
   initBattleShipGameContract,
   initBattleShipGameFactoryContract,
 } from "../../util/contractInit";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsStarted } from "../../../app/appSlice";
 
 export default function Home() {
   const [ships, setShips] = useState<boolean[][]>(generate2Dbools(5, 5));
   const [gameAdderss, setGameAddress] = useState<string>("");
   const [enemyAddress, setEnemyAddress] = useState<string>("");
   const userAddress = useSelector((state: any) => state.app.userAddress);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -71,9 +73,6 @@ export default function Home() {
     const shipCoordinates = boolMetrix2Coordinates(ships);
     let signedShips: string[] = [];
     for (let i = 0; i < shipCoordinates.length; i++) {
-      console.log(
-        shipCoordinates[i][0].toString() + shipCoordinates[i][0].toString()
-      );
       signedShips.push(
         sign(
           shipCoordinates[i][0].toString() + shipCoordinates[i][0].toString(),
@@ -101,6 +100,7 @@ export default function Home() {
 
   const handleJoin = () => {
     setEnemyAddress("");
+    dispatch(setIsStarted(true));
     joinGame(gameAdderss);
   };
 
