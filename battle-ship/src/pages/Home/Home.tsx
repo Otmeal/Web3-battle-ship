@@ -1,21 +1,94 @@
 import Web3 from "web3";
-import FeatureCard from "./FeatureCard";
+import { Box, Card, Grid } from "@mui/material";
+import GameBoard from "../../components/GameBoard/GameBoard";
+import { useState } from "react";
+import generate2Dbools from "../../util/generate2Dbools";
+import muiGlassSX from "../../styles/MuiGlassSX";
 
 export default function Home() {
+  const [ships, setShips] = useState<boolean[][]>(generate2Dbools(5, 5));
+
+  const handleClick = (x: number, y: number) => {
+    let shipCount = 0;
+    for (let i = 0; i < 5; i++) {
+      for (let j = 0; j < 5; j++) {
+        if (ships[i][j]) {
+          shipCount++;
+        }
+      }
+    }
+
+    if (ships[x][y]) {
+      setShips((prev) => {
+        const newShips = [...prev];
+        newShips[x][y] = false;
+        return newShips;
+      });
+    } else if (shipCount >= 10) {
+      console.log("You have already placed 10 ships");
+    } else {
+      setShips((prev) => {
+        const newShips = [...prev];
+        newShips[x][y] = true;
+        return newShips;
+      });
+    }
+  };
+
   return (
-    <div className="background">
-      <Background />
-      <Navbar />
-      <div className="container mx-auto p-8">
-        <HeroSection />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-          <FeatureCard title="Reliability">Web 3.0</FeatureCard>
-          <FeatureCard title="Security">Low Fees</FeatureCard>
-          <FeatureCard title="Ethereum">Blockchain</FeatureCard>
-          <TransactionForm />
-        </div>
-      </div>
-    </div>
+    <Box
+      sx={{
+        fontFamily: "Roboto, sans-serif",
+        display: "absolute",
+        width: "100%",
+        height: "80%",
+      }}
+    >
+      <Grid
+        container
+        sx={{
+          height: "100%",
+          padding: "20px",
+        }}
+        spacing={2}
+      >
+        <Grid item xs={8} p={0}>
+          <Card
+            className="glass"
+            sx={{
+              height: "100%",
+              width: "100%",
+              ...muiGlassSX,
+            }}
+          >
+            <GameBoard
+              ships={ships}
+              hits={generate2Dbools(5, 5)}
+              selection={{ x_coordinate: -1, y_coordinate: -1 }}
+              onClick={handleClick}
+            ></GameBoard>
+          </Card>
+        </Grid>
+        <Grid item xs={4} p={0}>
+          <Card
+            sx={{
+              height: "100%",
+              width: "100%",
+              ...muiGlassSX,
+            }}
+          >
+            <h1 className="text-4xl font-bold mb-4">
+              Send Crypto across the world
+            </h1>
+            <p className="mb-6">
+              Explore the crypto world. Buy and sell cryptocurrencies easily on
+              Krypto.
+            </p>
+            <ConnectToMetaMask />
+          </Card>
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
 
@@ -51,29 +124,6 @@ const ConnectToMetaMask = () => {
       </span>
       <div className="ease-in duration-300 opacity-0 group-hover:block group-hover:opacity-100 transition-all"></div>
     </button>
-  );
-};
-
-const Navbar = () => {
-  return (
-    <nav className=" text-white p-4 flex justify-between">
-      <div className="pyramid-loader">
-        <div className="wrapper">
-          <span className="side side1"></span>
-          <span className="side side2"></span>
-          <span className="side side3"></span>
-          <span className="side side4"></span>
-          <span className="shadow"></span>
-        </div>
-      </div>
-      {/* <div className="flex space-x-4">
-        <a href="#" className="hover:text-gray-300">Market</a>
-        <a href="#" className="hover:text-gray-300">Exchange</a>
-        <a href="#" className="hover:text-gray-300">Tutorials</a>
-        <a href="#" className="hover:text-gray-300">Wallets</a>
-        <button className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">Login</button>
-      </div> */}
-    </nav>
   );
 };
 
@@ -144,5 +194,14 @@ const TransactionForm = () => {
 };
 
 const Background = () => {
-  return <div className="background"></div>;
+  return (
+    <Box
+      className="background"
+      sx={{
+        width: "100%",
+        height: "100%",
+        display: "absolute",
+      }}
+    ></Box>
+  );
 };

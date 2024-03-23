@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+html,
+body,
+#root {
   margin: 0;
+  height: 100%;
 }
