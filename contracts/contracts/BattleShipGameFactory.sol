@@ -2,7 +2,7 @@
 pragma solidity ^0.8.10;
 import "./BattleShipGame.sol";
 
-contract WarShipFactory {
+contract BattleShipGameFactory {
     address[] public deployedGames;
 
     function createBattleShipGame(address[] memory _playersAddress) public payable returns (address) {
