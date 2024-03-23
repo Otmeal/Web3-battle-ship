@@ -3,6 +3,8 @@ import muiGlassSX from "../../styles/MuiGlassSX";
 import GameBoard from "../../components/GameBoard/GameBoard";
 import generate2Dbools from "../../util/generate2Dbools";
 import { useState } from "react";
+import AttackButton from "./AttackButton";
+import { width } from "@mui/system";
 
 export default function Game() {
   const [selection, setSelection] = useState({
@@ -61,7 +63,11 @@ export default function Game() {
               width: "100%",
               ...muiGlassSX,
             }}
-          ></Card>
+          >
+            <Box p={"40px"} width={"100%"}>
+              <AttackButton selection={selection}></AttackButton>
+            </Box>
+          </Card>
         </Grid>
         <Grid item xs={5} p={0}>
           <Card
