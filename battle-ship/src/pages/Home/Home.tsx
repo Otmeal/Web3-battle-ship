@@ -14,7 +14,6 @@ import { generateKey, hashKey } from "../../util/keyTools";
 import { sign } from "../../util/sign";
 import {
   createBattleShipGameContract,
-  getBattleShipGameContract,
   initBattleShipGameContract,
   initBattleShipGameFactoryContract,
 } from "../../util/contractInit";

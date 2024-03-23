@@ -4,7 +4,7 @@ import GameBoard from "../../components/GameBoard/GameBoard";
 import generate2Dbools from "../../util/generate2Dbools";
 import { useState } from "react";
 import AttackButton from "./AttackButton";
-import { width } from "@mui/system";
+import { bin2boolMetrix } from "../../util/boolMetrixTools";
 
 export default function Game() {
   const [selection, setSelection] = useState({
@@ -13,6 +13,12 @@ export default function Game() {
   });
   const [hits, setHits] = useState(generate2Dbools(5, 5));
   const [ships, setShips] = useState(generate2Dbools(5, 5));
+
+  const selfShips = bin2boolMetrix(
+    (localStorage.getItem("ships") as string).replace('"', ""),
+    5,
+    5
+  );
 
   const handleAttackClick = (x: number, y: number) => {
     if (selection.x_coordinate === x && selection.y_coordinate === y) {
@@ -49,7 +55,7 @@ export default function Game() {
             }}
           >
             <GameBoard
-              ships={generate2Dbools(5, 5)}
+              ships={selfShips}
               hits={generate2Dbools(5, 5)}
               selection={{ x_coordinate: -1, y_coordinate: -1 }}
               onClick={(_x, _y) => {}}
