@@ -1,36 +1,48 @@
 # Web3-battle-ship
 
 
-This contract implements a basic Battleship game for two players. Players can join the game, place their ships on a virtual board (by providing the signature of the coordnate without revealing their actual position), and take turns shooting at each other's ships, ensuring all users can not cheat using cryptographic proofs. The game ends when one player destroys all the other player's ships.
+This smart contract implements an advanced Battleship game for two players, with the possibility of further extension. Players can join the game, place their ships on a virtual board (by providing the signature of the coordnate without revealing their actual position until the end of the game), and take turns shooting at each other's ships. The game ends when one player destroys all the other player's ships. Additionally, once the game ends, various cryptographic methods are employed, initial and intermediate game states are revealed, and cheater are determined. This decentralized approach provides unprecedented fairness and trancparancy of actions to all players, which makes the gamelay more engaging and interesting.
 
 ## Client:
 
-**Placing Ships**
+### Placing Ships
 ![alt text](./battle-ship/public/image.png)
-**Battle**
+
+### Battle
 ![alt text](./battle-ship/public/image-1.png)
 
-### Contract:
-- Player Management:
-    - Supports exactly two players.
+## Contract
+### Functionality
+**Player Management**
+    
+    - Supports two players with the possibility of the accessible further extension.
     - Verifies player addresses during game interaction.
-- Ship Placement:
-    - Players submit the signitures of their ship placements without revealing the actual position of their ships.
-    - Duplicate ship placements on the board are prevented.
-- Hit Detection:
+
+**Ship Placement**
+    
+    - Players submit the signitures(hashes) of their ship positions without revealing the actual position until the end of the game, facilitating security.
+    - Duplicate as well as out-of-bounds ship placements become evident at the end of the game, facilitating fairness.
+
+**Hit Detection**
+    
     - The contract checks if a shot hits a ship based on the submitted hash.
-- Game State Management:
+
+**Game State Management**
+    
     - Tracks destroyed ships and players.
     - Determines the winner when one player loses all ships.
     - Handles turn management and checks if all players have played/reported hits.
-- Cheat Detection:
-    - 
 
+**Cheat Detection**
+    
+    - The initial hashed placements of ships are stored, as well as all the shots during all the rounds, and hit confirmations of players towards themselves. At the end of the game player's private keys are revealed, and the shot history is encoded together with that key: (data , key) format. If it does not match the report, provided by the player, than it indicates that this player is a cheater.
+
+### Variables
 | State Variables | Description |
 | ----------- | ----------- |
 | owner | The address of the contract deployer |
-| NO_PLAYERS | Constant defining the maximum number of players (2) |
-| NO_SHIP_PIECES | Constant defining the number of ship pieces per player (10) |
+| NO_PLAYERS | Constant defining the number of players in the current game  |
+| NO_SHIP_PIECES | Constant defining the number of ships pieces per player |
 | players | Mapping to track participating players (address to bool) |
 | playersAddress | Array of player addresses for easier iteration. |
 | ships | Mapping to store player ship placements (address to mapping of ship hash to bool) |
@@ -41,29 +53,74 @@ This contract implements a basic Battleship game for two players. Players can jo
 | playerHasPlayed | Mapping to track if a player has made a shot in the current turn (address to bool) |
 | playerHasPlacedShips | Mapping to track if a player has placed their ships (address to bool) |
 | playerHasReportedHits | Mapping to track if a player has reported hits in the current turn (address to bool) |
-| isGameOver | Boolean flag indicating if the game is over |
+| isGameOver | Boolean flag indicating whether the game has ended |
 
-- Structs:
-    - Coordinate: Represents a ship or shot location on the board (x, y coordinates).
-    - ShipShotProof: Stores proof of a shot including the signature, and the address of the player who took the shot.
 
-- Events:
-    - ShotReport: Emitted when a shot is reported, including coordinates, target, shooter, and hit status.
-- PlayerJoinedGame: 
-    - Emitted when a player joins the game.
-- PlayerLost: 
-    - Emitted when a player loses all ships.
-- Constructor:
+### Structs
+**Coordinate**
+    
+    -Represents a ship or shot location on the board (x, y coordinates).
+**ShipShotProof**
+    
+    -Stores proof of a shot including the signature, and the address of the player who took the shot.
+
+### Events
+**ShotReport**
+
+    Emitted when a shot is reported, including coordinates, target, shooter, and hit status.
+**PlayerJoinedGame**
+
+    Emitted when a player joins the game.
+**PlayerLost**
+
+    Emitted when a player loses all ships.
+**Constructor**
+    
     - Takes an array of player addresses as input.
     - Validates the number of players.
     - Adds players to the game and emits PlayerJoinedGame events.
     - Sets the contract owner.
-- Functions:
-`joinGame(_playerShips)`: Allows a player to join the game by submitting their ship placements as keccak256 hashes.
-`takeAShot(_coord)`: Lets a player take a shot at a specific coordinate.
-`reportHits(_shotSignatures)`: Allows a player to report hits on their opponent's ships using signed proofs.
-`isHit(_hitProof)`: Internal function that verifies the shot proof and checks if it hits a ship.
-`destroyPlayerShip(_player, _coord)`: Internal function that marks a ship as destroyed and checks for a winner.
-`isTurnOver()`: Checks if all players have made their shots in the current turn.
-`hasReportedShots()`: Checks if all players have reported hits in the current turn.
-`endTurn()`: Ends the current turn, resets player variables, and
+
+
+### Functions
+`joinGame(_playerShips)`: 
+Allows a player to join the game by submitting their ship placements as keccak256 hashes.
+
+`takeAShot(_coord)`:
+Lets a player take a shot at a specific coordinate.
+
+`reportHits(_shotSignatures)`:
+Allows a player to report hits on their opponent's ships using signed proofs.
+
+`isHit(_hitProof)`:
+Internal function that verifies the shot proof and checks if it hits a ship.
+
+`destroyPlayerShip(_player, _coord)`:
+Internal function that marks a ship as destroyed and checks for a winner.
+
+`isTurnOver()`:
+Checks if all players have made their shots in the current turn.
+
+`hasReportedShots()`:
+Checks if all players have reported hits in the current turn.
+
+`endTurn()`:
+Ends the current turn, resets player variables, and
+
+### Additional Functions
+
+`isGameStarted()`: 
+Checks if the game has started by verifying if all players have placed all their ships.
+
+`getWinner()`: 
+Retrieves the winner of the game by checking both destroyed ships and cheater status.
+
+`submitKey(bytes32 key)`:
+Allows players to submit their private keys for verification after the game ends.
+
+`isCheater(address _player)`:
+Checks if a player has submitted incorrect shot records or invalid hip placements, indicating cheating.
+
+`sign(bytes memory data, bytes32 key)`:
+Helper function to sign data with a private key.
+
