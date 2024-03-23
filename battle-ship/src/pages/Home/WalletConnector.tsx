@@ -37,14 +37,21 @@ export default function WalletConnector() {
 
   console.log("isConnected", isConnected);
   return (
-    <Button
-      variant="contained"
-      color="primary"
-      onClick={getAddress}
-      disabled={isConnected}
-      sx={{ width: "80%" }}
-    >
-      {isConnected ? "Connected" : "Connect"}
-    </Button>
+    <>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={getAddress}
+        disabled={isConnected}
+        sx={{ width: "80%" }}
+      >
+        {isConnected
+          ? "Connected as " +
+            userAddress.slice(0, 6) +
+            "..." +
+            userAddress.slice(-4)
+          : "Connect"}
+      </Button>
+    </>
   );
 }

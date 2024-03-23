@@ -1,4 +1,4 @@
-import { Box, Card, Grid } from "@mui/material";
+import { Box, Card, Grid, TextField, Button } from "@mui/material";
 import GameBoard from "../../components/GameBoard/GameBoard";
 import { useState } from "react";
 import generate2Dbools from "../../util/generate2Dbools";
@@ -7,6 +7,7 @@ import WalletConnector from "./WalletConnector";
 
 export default function Home() {
   const [ships, setShips] = useState<boolean[][]>(generate2Dbools(5, 5));
+  const [gameAdderss, setGameAddress] = useState<string>("");
 
   const handleClick = (x: number, y: number) => {
     let shipCount = 0;
@@ -74,10 +75,29 @@ export default function Home() {
             sx={{
               height: "100%",
               width: "100%",
+              flexDirection: "column",
               ...muiGlassSX,
             }}
           >
             <WalletConnector />
+            <TextField
+              value={gameAdderss}
+              onChange={(e) => setGameAddress(e.target.value)}
+              sx={{ width: "80%", marginTop: "10px" }}
+              helperText="Enter Game Address"
+              variant="filled"
+            />
+            <Button
+              color="primary"
+              variant="contained"
+              sx={{
+                width: "80%",
+                marginTop: "10px",
+                marginBottom: "10px",
+              }}
+            >
+              Join
+            </Button>
           </Card>
         </Grid>
       </Grid>
