@@ -3,18 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@alch/alchemy-web3": "^0.1.18",
+    "@alch/alchemy-web3": "^1.4.7",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "crypto": "^1.0.1",
-    "crypto-js": "^3.1.9-1",
+    "crypto-browserify": "^3.12.0",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
+    "https-browserify": "^1.0.0",
+    "os": "^0.1.2",
     "path": "^0.12.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "^3.0.1",
-    "web-vitals": "^2.1.4"
+    "react-scripts": "^5.0.1",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.3",
+    "web-vitals": "^2.1.4",
+    "zlib": "^1.0.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -39,6 +47,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "browser": {
+      "crypto": false
   }
 }
-

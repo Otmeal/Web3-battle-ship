@@ -6,12 +6,19 @@ const alchemyKey = process.env.REACT_APP_ALCHEMY_KEY;
 const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
 const web3 = createAlchemyWeb3(alchemyKey);
 
+
+export const loadCurrentMessage = async () => {
+    const message = await battleShipContract.methods.message().call();
+    return message;
+};
+
 // Create an instance of the contract
 export const battleShipContract = new web3.eth.Contract(
     contractABI,
     contractAddress
 );
 
+const YOUR_ADDRESS = "0x69C2150d53f4f9cb7AEa33745adcB075C01c13cA"
 // Function to join the game
 export const joinGame = async (_playerShips) => {
     return await battleShipContract.methods.joinGame(_playerShips).send({ from: YOUR_ADDRESS });
