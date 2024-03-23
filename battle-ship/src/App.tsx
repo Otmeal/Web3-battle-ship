@@ -2,10 +2,12 @@ import { RouterProvider } from "react-router-dom";
 import router from "./routes/Router.ts";
 import { Box } from "@mui/material";
 import "./styles/App.scss";
+import Navbar from "./components/Navbar/Navbar.tsx";
 
 function App() {
   return (
     <Box
+      className="background"
       sx={{
         fontFamily: "Roboto, sans-serif",
         display: "absolute",
@@ -13,6 +15,7 @@ function App() {
         height: "100%",
       }}
     >
+      <Navbar />
       <RouterProvider router={router}></RouterProvider>
     </Box>
   );

@@ -19,7 +19,18 @@ export default function GameBoard({ ships, hits, selection, onClick }: Props) {
       const isSelected =
         selection.x_coordinate === i && selection.y_coordinate === j;
       items.push(
-        <Grid item xs={2}>
+        <Grid
+          item
+          xs={2}
+          sx={{
+            height: "20%",
+            display: "flex",
+            width: "100%",
+            justifyContent: "center",
+
+            alignItems: "center",
+          }}
+        >
           <SeaBlock
             x={i}
             y={j}
@@ -33,7 +44,19 @@ export default function GameBoard({ ships, hits, selection, onClick }: Props) {
     }
   }
   return (
-    <Grid container xs={10}>
+    <Grid
+      container
+      columns={10}
+      p={2}
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        width: "100%",
+        height: "100%",
+        maxWidth: "600px",
+      }}
+      spacing={2}
+    >
       {items}
     </Grid>
   );
