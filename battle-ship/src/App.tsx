@@ -1,6 +1,6 @@
 import { RouterProvider } from "react-router-dom";
 import router from "./routes/Router.ts";
-import { AppBar, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import "./styles/App.scss";
 
 function App() {
