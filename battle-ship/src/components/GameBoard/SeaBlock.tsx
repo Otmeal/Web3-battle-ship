@@ -37,6 +37,10 @@ export default function SeaBlock({
     );
   } else if (isSelected) {
     content = <AdjustIcon sx={{ color: "red", width: "70%", height: "70%" }} />;
+  } else if (isHit) {
+    content = (
+      <AdjustIcon sx={{ color: "#8f8f8f", width: "50%", height: "50%" }} />
+    );
   }
 
   return (

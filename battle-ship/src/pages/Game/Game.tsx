@@ -16,6 +16,14 @@ export default function Game() {
   });
   const [hits, setHits] = useState(generate2Dbools(5, 5));
   const [ships, setShips] = useState(generate2Dbools(5, 5));
+  const [selfHits, setSelfHits] = useState(generate2Dbools(5, 5));
+  const [selfShips, setSelfShips] = useState(
+    bin2boolMetrix(
+      (localStorage.getItem("ships") as string).replace('"', ""),
+      5,
+      5
+    )
+  );
   const [isTurnOver, setIsTurnOver] = useState(false);
   const [isAllReporded, setIsAllReporded] = useState(true);
   const userAddress = useSelector((state: any) => state.app.userAddress);
@@ -24,11 +32,6 @@ export default function Game() {
 
   const dispatch = useDispatch();
 
-  const selfShips = bin2boolMetrix(
-    (localStorage.getItem("ships") as string).replace('"', ""),
-    5,
-    5
-  );
   gameContract.on("PlayerJoinedGame", (_player: string, _index: number) => {
     dispatch(setIsStarted(true));
   });
@@ -84,6 +87,28 @@ export default function Game() {
     }
   });
 
+  gameContract.on(
+    "ShotReport",
+    async (coord: any, target: string, shotBy: string, isHit: boolean) => {
+      if (target === userAddress && isHit) {
+        setSelfHits((prev) => {
+          const newHits = [...prev];
+          newHits[coord.x][coord.y] = true;
+          return newHits;
+        });
+      } else if (target === enemyAddress && isHit) {
+        setShips((prev) => {
+          const newShips = [...prev];
+          newShips[coord.x][coord.y] = true;
+          return newShips;
+        });
+      }
+
+      let newHits = hits;
+      newHits[coord.x][coord.y] = true;
+      setHits(newHits);
+    }
+  );
   const handleAttackClick = (x: number, y: number) => {
     if (selection.x_coordinate === x && selection.y_coordinate === y) {
       setSelection({ x_coordinate: -1, y_coordinate: -1 });
@@ -120,7 +145,7 @@ export default function Game() {
           >
             <GameBoard
               ships={selfShips}
-              hits={generate2Dbools(5, 5)}
+              hits={selfHits}
               selection={{ x_coordinate: -1, y_coordinate: -1 }}
               onClick={(_x, _y) => {}}
             ></GameBoard>
@@ -153,8 +178,8 @@ export default function Game() {
             }}
           >
             <GameBoard
-              ships={generate2Dbools(5, 5)}
-              hits={generate2Dbools(5, 5)}
+              ships={ships}
+              hits={hits}
               selection={selection}
               onClick={handleAttackClick}
             ></GameBoard>
