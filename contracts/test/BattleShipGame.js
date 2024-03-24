@@ -24,7 +24,12 @@ describe("BattleShipGame", function () {
     it("Should deploy without any error", async function () {
       const { battleShipGame, owner, otherAccount } = await loadFixture(deployBattleShipGame);
     });
-
-
+  });
+  describe("Util", function () {
+    it("Should sign the data correctly", async function () {
+      const { battleShipGame, owner, otherAccount } = await loadFixture(deployBattleShipGame);
+      const res = await battleShipGame.signCoord({x: 2, y: 1}, ethers.toUtf8Bytes('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'))
+      expect(res).to.equal('0xbcd3b305d0871d09e6aa505baaec5b1a5324982c7eb63141c32ff4adb0fcffbd')
+    });
   });
 });
