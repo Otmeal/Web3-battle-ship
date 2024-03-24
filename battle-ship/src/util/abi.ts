@@ -87,6 +87,19 @@ export const BattleShipGameAbi = [
     },
     {
       "inputs": [],
+      "name": "NO_PLAYERS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "NO_SHIP_PIECES",
       "outputs": [
         {
@@ -526,9 +539,21 @@ export const BattleShipGameAbi = [
     {
       "inputs": [
         {
-          "internalType": "bytes",
-          "name": "data",
-          "type": "bytes"
+          "components": [
+            {
+              "internalType": "uint8",
+              "name": "x",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "y",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct BattleShipGame.Coordinate",
+          "name": "coord",
+          "type": "tuple"
         },
         {
           "internalType": "bytes32",
@@ -536,7 +561,7 @@ export const BattleShipGameAbi = [
           "type": "bytes32"
         }
       ],
-      "name": "sign",
+      "name": "signCoord",
       "outputs": [
         {
           "internalType": "bytes32",
@@ -589,54 +614,67 @@ export const BattleShipGameAbi = [
 
 export const BattleShipGameFactoryAbi = [
     {
-        "inputs": [
-            {
-                "internalType": "address[]",
-                "name": "_playersAddress",
-                "type": "address[]"
-            }
-        ],
-        "name": "createBattleShipGame",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "payable",
-        "type": "function"
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "gameAddress",
+          "type": "address"
+        }
+      ],
+      "name": "GameCreated",
+      "type": "event"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "deployedGames",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_playersAddress",
+          "type": "address[]"
+        }
+      ],
+      "name": "createBattleShipGame",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
     },
     {
-        "inputs": [],
-        "name": "getDeployedGames",
-        "outputs": [
-            {
-                "internalType": "address[]",
-                "name": "",
-                "type": "address[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "deployedGames",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getDeployedGames",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
-]
+  ]
