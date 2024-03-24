@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The core of the project is a smart contract. It implements an advanced Battleship game for two players, with the possibility of further extension. Players can join the game, place their ships on a virtual board (by providing the signature of the coordnate without revealing their actual position until the end of the game), and take turns shooting at each other's ships. The game ends when one player destroys all the other player's ships. Additionally, once the game ends, various cryptographic methods are employed, initial and intermediate game states are revealed, and cheater are determined. This decentralized approach provides unprecedented fairness and trancparancy of actions to all players, which makes the gamelay more engaging and interesting.
+The core of the project is a smart contract. It implements an advanced Battleship game for two players, with the possibility of further extension. Players can join the game, place their ships on a virtual board (by providing the signature of the coordnate without revealing their actual position until the end of the game), and take turns shooting at each other's ships. The game ends when one player destroys all the other player's ships. Additionally, once the game ends, various cryptographic methods are employed, initial and intermediate game states are revealed, and cheater is determined. This decentralized approach provides unprecedented fairness and trancparancy of actions to all players, which makes the gamelay more engaging and interesting.
 
 ### Original Implementation
 While doing research on the topic of games backed by blockchain, we discovered a Battleship smart contract implementation, and used it as our reference:
