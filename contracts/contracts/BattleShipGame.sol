@@ -16,7 +16,7 @@ contract BattleShipGame {
 
     // All the players participating in the game
     mapping(address => bool) private players;
-    address[] private playersAddress; // We use an array because it's easier to iterate than a mapping
+    address[] public playersAddress; // We use an array because it's easier to iterate than a mapping
 
     // Player ships
     mapping(address => mapping(bytes32 => bool)) ships;
@@ -257,7 +257,7 @@ contract BattleShipGame {
         require(isKeysRevealed, "Keys are not yet revealed");
         for (uint i = 0; i < round; i++) {
             for (uint j = 0; j < roundShotsHistory[i].length; j++) {
-                if (sign(abi.encodePacked(roundShotsHistory[i][j].x, roundShotsHistory[i][j].y), playerSecretKeys[_player]) != playerReportHistory[_player][i][j].signature) {
+                if (signCoord(roundShotsHistory[i][j], playerSecretKeys[_player]) != playerReportHistory[_player][i][j].signature) {
                     return true;
                 }
             }
@@ -265,8 +265,8 @@ contract BattleShipGame {
         return false;
     }
 
-    function sign(bytes memory data, bytes32 key) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked(data, key));
+    function signCoord(Coordinate memory coord, bytes32 key) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(abi.encodePacked(coord.x, coord.y) , key));
     }
 }
 
